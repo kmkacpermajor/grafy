@@ -1,4 +1,5 @@
 from collections import defaultdict
+import random
 
 '''
 class Graph(object):
@@ -34,6 +35,21 @@ class Graph(object):
 '''
 
 
+def create_matrix(n,edges):
+    matrix=[]
+    for i in range(n):
+        matrix.append([0 for j in range(n)])
+
+    cnt = edges
+    while cnt:
+        x = random.randint(0, n - 2)
+        y = random.randint(x + 1, n - 1)
+        if matrix[x][y] == 0:
+            matrix[x][y] = 1
+            cnt -= 1
+
+    return matrix
+
 def matrix_to_list(matrix):
     adjList = defaultdict(list)
     for i in range(len(matrix)):
@@ -42,8 +58,17 @@ def matrix_to_list(matrix):
                 adjList[i].append(j)
     return adjList
 
+def matrix_to_edge(matrix):
+    edgeList=[]
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            if matrix[i][j]==1:
+                edgeList.append([i, j])
 
-def print_adj_list(adjList):
+    return edgeList
+
+
+def show_adj_list(adjList):
     for i in adjList:
         print(i, end="")
         for j in adjList[i]:
@@ -56,31 +81,44 @@ while x:
     print("Wybierz opcje")
     print("1 - genetowanie grafu o n wierzchołkach")
     print("2 - genetowanie grafu poprzed podanie wierszy macierzy sasiedztwa")
-    opcja = int(input())
+    op = int(input())
 
     print("Podaj n")
     n = int(input())
+    edges = (n*(n-1))//4
+    adjMatrix = []
 
-    if opcja == 1:
-        adjMatrix = []
+    if op == 1:
+
+        adjMatrix = create_matrix(n,edges)
+
+    if op == 2:
         for i in range(n):
-            adjMatrix.append([0 for j in range(n)])
-        print(adjMatrix)
-        print()
-        adjMatrix[0][1]=1
-        adjMatrix[0][2]=1
-
-        adjList = matrix_to_list(adjMatrix)
-        print_adj_list(adjList)
+            print("Podaj wiersz nr: {}".format(i))
+            adjMatrix.append([int(x) for x in input().split()])
 
 
+
+    adjList = matrix_to_list(adjMatrix)
+    edgeList = matrix_to_edge(adjMatrix)
+
+    print("\n\nAdjMatrix")
+    for x in range(n):
+        print(*adjMatrix[x])
+
+    print("\n\nEdge list")
+    for x in range(len(edgeList)):
+        print(*edgeList[x])
+
+    print("\n\nAdjList")
+    show_adj_list(adjList)
 
 
 
 
     print("0 - jesli chcesz zakonczyc program")
     print("1 - jesli chcesz wykonac go ponownie")
-    x=int(input())
+    x = int(input())
 
 
 
