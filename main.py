@@ -173,12 +173,12 @@ def BFSlikeSort(graph, n, reprezentacja):
         if in_degree[i] == 0:
             queue.append(i)
 
-    top_order = []
+    sorted_nodes = []
 
     while queue:
 
         u = queue.pop(0)
-        top_order.append(u)
+        sorted_nodes.append(u)
         next = []
 
         if reprezentacja == "adjList":
@@ -198,7 +198,41 @@ def BFSlikeSort(graph, n, reprezentacja):
             if in_degree[i] == 0:
                 queue.append(i)
 
-    print (top_order)
+    print (*sorted_nodes)
+
+def DFSlikeSort(graph, n, reprezentacja):
+    sorted_nodes = []
+    visited = [False] * n
+
+    while False in visited:
+        while True:
+            v = random.randint(0,n-1)
+            if visited[v] == False:
+                DFSlikealg(graph, v, n, visited, sorted_nodes, reprezentacja)
+                break
+          
+    return sorted_nodes[::-1]
+ 
+def DFSlikealg(graph, v, n, visited, sorted_nodes, reprezentacja):
+    visited[v] = True
+    next = []
+    
+    if reprezentacja == "adjList":
+        next = graph[v]
+    elif reprezentacja == "adjMatrix":
+        for i in range(n):
+            if graph[v][i] == 1:
+                next.append(i)
+    elif reprezentacja == "edgeList":
+        for el in graph:
+            if el[0] == v:
+                next.append(el[1])
+
+    for neighbor in next:
+        if visited[neighbor] == False:
+            DFSlikealg(graph, neighbor, n, visited, sorted_nodes, reprezentacja)
+
+    sorted_nodes.append(v)
 
 x = 1
 while x:
@@ -264,6 +298,12 @@ while x:
     BFSlikeSort(adjMatrix, n, "adjMatrix")
 
     BFSlikeSort(edgeList, n, "edgeList")
+
+    DFSlikeSort(adjList, n, "adjList")
+
+    DFSlikeSort(adjMatrix, n, "adjMatrix")
+
+    DFSlikeSort(edgeList, n, "edgeList")
 
     print("0 - jesli chcesz zakonczyc program")
     print("1 - jesli chcesz wykonac go ponownie")
