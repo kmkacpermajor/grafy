@@ -121,7 +121,7 @@ def DFS(graph, v, n, reprezentacja):
 
     DFSalg(graph, v, visited, reprezentacja)
 
-    if False in visited:
+    while False in visited:
         while True:
             v = random.randint(0,n-1)
             if visited[v] == False:
@@ -150,6 +150,55 @@ def DFSalg(graph, v, visited, reprezentacja):
                 if visited[el[1]] == False:
                     DFSalg(graph, el[1], visited, reprezentacja)
 
+
+def BFSlikeSort(graph, n, reprezentacja):
+        
+    in_degree = [0]*n
+        
+    if reprezentacja == "adjList":
+        for i in graph:
+            for j in graph[i]:
+                in_degree[j] += 1
+    elif reprezentacja == "adjMatrix":
+        for i in range(n):
+            for j in range(n):
+                if graph[i][j] == 1:
+                    in_degree[j] += 1
+    elif reprezentacja == "edgeList":
+        for el in graph:
+            in_degree[el[1]] += 1
+
+    queue = []
+    for i in range(n):
+        if in_degree[i] == 0:
+            queue.append(i)
+
+    top_order = []
+
+    while queue:
+
+        u = queue.pop(0)
+        top_order.append(u)
+        next = []
+
+        if reprezentacja == "adjList":
+            next = graph[u]
+        elif reprezentacja == "adjMatrix":
+            for i in range(n):
+                if graph[u][i]:
+                    next.append(i)
+        elif reprezentacja == "edgeList":
+            for el in graph:
+                if el[0] == u:
+                    next.append(el[1])
+
+
+        for i in next:
+            in_degree[i] -= 1
+            if in_degree[i] == 0:
+                queue.append(i)
+
+    print (top_order)
 
 x = 1
 while x:
@@ -207,6 +256,14 @@ while x:
     DFS(adjMatrix, rand, n, "adjMatrix")
 
     DFS(edgeList, rand, n, "edgeList")
+
+    print()
+
+    BFSlikeSort(adjList, n, "adjList")
+
+    BFSlikeSort(adjMatrix, n, "adjMatrix")
+
+    BFSlikeSort(edgeList, n, "edgeList")
 
     print("0 - jesli chcesz zakonczyc program")
     print("1 - jesli chcesz wykonac go ponownie")
