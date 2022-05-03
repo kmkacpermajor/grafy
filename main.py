@@ -1,64 +1,34 @@
 from collections import defaultdict
 import random
 
-'''
-class Graph(object):
-    # Initialize the matrix
-    def __init__(self, size):
-        self.adjMatrix = []
-        for i in range(size):
-            self.adjMatrix.append([0 for i in range(size)])
-        self.size = size
-    def add_edge(self, v1, v2):
-        if v1 == v2:
-            print("Same vertex %d and %d" % (v1, v2))
-        self.adjMatrix[v1][v2] = 1
-        #self.adjMatrix[v2][v1] = 1
-    def remove_edge(self, v1, v2):
-        if self.adjMatrix[v1][v2] == 0:
-            print("No edge between %d and %d" % (v1, v2))
-            return
-        self.adjMatrix[v1][v2] = 0
-        #self.adjMatrix[v2][v1] = 0
-    def __len__(self):
-        return self.size
-    def print_matrix(self):
-        for row in self.adjMatrix:
-            for val in row:
-                print(val, end=" ")
-            print()
-'''
-
-
-def create_matrix(n,edges):
-    matrix=[]
+def create_matrix(n,cnt):
+    matrix=[]               # tworzymy wyzerowaną 2 wymiarową tablicę
     for i in range(n):
         matrix.append([0 for j in range(n)])
 
-    cnt = edges
-    while cnt:
-        x = random.randint(0, n - 2)
+    while cnt:              # dopóki liczba większa od zera
+        x = random.randint(0, n - 2)    # losujemy koordynaty w górnym trójkącie
         y = random.randint(x + 1, n - 1)
-        if matrix[x][y] == 0:
+        if matrix[x][y] == 0:   # jeśli puste dodajemy krawędź i zmniejszamy liczbe
             matrix[x][y] = 1
             cnt -= 1
 
     return matrix
 
 def matrix_to_list(matrix):
-    adjList = defaultdict(list)
-    for i in range(len(matrix)):
+    adjList = defaultdict(list) # tworzymy słownik
+    for i in range(len(matrix)): # przechodzimy przez całą macierz sąsiedztwa 
         for j in range(len(matrix[i])):
-            if matrix[i][j] == 1:
-                adjList[i].append(j)
+            if matrix[i][j] == 1:   # jeśli istnieje krawędź w danym koordynacie
+                adjList[i].append(j)   # do itego elementu słownika dodajemy jty indeks
     return adjList
 
 def matrix_to_edge(matrix):
-    edgeList=[]
-    for i in range(len(matrix)):
+    edgeList=[] # tworzymy pustą tablicę
+    for i in range(len(matrix)): # przechodzimy przez całą macierz sąsiedztwa 
         for j in range(len(matrix[i])):
-            if matrix[i][j]==1:
-                edgeList.append([i, j])
+            if matrix[i][j]==1: # jeśli istnieje krawędź w danym koordynacie
+                edgeList.append([i, j]) # do tablicy dodajemy tablicę dwuelementową z itym i jtym indeksem
 
     return edgeList
 
@@ -74,19 +44,20 @@ def show_adj_list(adjList):
 
 def BFS(graph, v, n, reprezentacja):
 
-    visited = [False] * n
+    visited = [False] * n   # tworzymy tablicę odwiedzonych wierzchołków
 
-    queue = []
+    queue = [] # tworzymy kolejkę
 
-    queue.append(v)
+    queue.append(v) # dodajemy do kolejki podany wierzchołek
     
     while True:
-        while queue:
+        while queue: # dopóki kolejka nie jest pusta
 
-            v = queue.pop(0)
-            print (v, end = " ")
-            visited[v] = True
+            v = queue.pop(0) # ściągamy pierwszy element z kolejki 
+            print (v, end = " ") # wypisujemy
+            visited[v] = True # i odznaczamy jako odwiedzony
 
+            # zależnie od reprezentacji szukamy następników i podajemy do kolejki
             if reprezentacja == "adjList":
                 for i in graph[v]:
                     if visited[i] == False:
@@ -105,8 +76,9 @@ def BFS(graph, v, n, reprezentacja):
                             queue.append(el[1])
                             visited[el[1]] = True
 
+        # sprawdzamy czy przeszliśmy wszystkie wierzchołki, jeśli nie losujemy nieodwiedzony
         if False in visited:
-            while True:
+            while True: 
                 v = random.randint(0,n-1)
                 if visited[v] == False:
                     queue.append(v)
@@ -117,10 +89,11 @@ def BFS(graph, v, n, reprezentacja):
 
 def DFS(graph, v, n, reprezentacja):
 
-    visited = [False] * n
+    visited = [False] * n # tworzymy tablicę odwiedzonych wierzchołków
 
-    DFSalg(graph, v, visited, reprezentacja)
+    DFSalg(graph, v, visited, reprezentacja) # podajemy wierzchołek do algorytmu
 
+    # dopóki nie przeszliśmy wszystkich wierzchołków losujemy nieodwiedzony
     while False in visited:
         while True:
             v = random.randint(0,n-1)
@@ -132,9 +105,10 @@ def DFS(graph, v, n, reprezentacja):
 
 def DFSalg(graph, v, visited, reprezentacja):
  
-    visited[v] = True
-    print(v, end=' ')
+    visited[v] = True # odznaczamy wierzchołek jako odwiedzony
+    print(v, end=' ') # wypisujemy
 
+    # zależnie od reprezentacji poszukujemy następników i wywołujemy dla nich DFS 
     if reprezentacja == "adjList":
         for i in graph[v]:
             if visited[i] == False:
@@ -153,8 +127,9 @@ def DFSalg(graph, v, visited, reprezentacja):
 
 def BFSlikeSort(graph, n, reprezentacja):
         
-    in_degree = [0]*n
+    in_degree = [0] * n # tworzymy tablicę pomocniczą ze stopniami wierzchołków
         
+    # zależnie od reprezentacji ustalamy stopnie wierzchołków
     if reprezentacja == "adjList":
         for i in graph:
             for j in graph[i]:
@@ -168,31 +143,32 @@ def BFSlikeSort(graph, n, reprezentacja):
         for el in graph:
             in_degree[el[1]] += 1
 
-    queue = []
-    for i in range(n):
+    queue = [] # tworzymy kolejkę
+    for i in range(n): # dopisujemy do kolejki wszystkie wierzchołki o stopniu 0
         if in_degree[i] == 0:
             queue.append(i)
 
-    sorted_nodes = []
+    sorted_nodes = [] # tworzymy tablicę wynikową
 
-    while queue:
+    while queue: # dopóki kolejka nie jest pusta
 
-        u = queue.pop(0)
-        sorted_nodes.append(u)
+        v = queue.pop(0) # ściągamy pierwszy element z kolejki 
+        sorted_nodes.append(v) # i dopisujemy go jako posortowany
+
+        # zależnie od reprezentacji poszukujemy następników i dodajemy je do tablicy z następnikami 
         next = []
-
         if reprezentacja == "adjList":
-            next = graph[u]
+            next = graph[v]
         elif reprezentacja == "adjMatrix":
             for i in range(n):
-                if graph[u][i]:
+                if graph[v][i]:
                     next.append(i)
         elif reprezentacja == "edgeList":
             for el in graph:
-                if el[0] == u:
+                if el[0] == v:
                     next.append(el[1])
 
-
+        # dla każdego następnika zmniejszamy jego stopień i jeśli jest równy 0 dodajemy go do kolejki
         for i in next:
             in_degree[i] -= 1
             if in_degree[i] == 0:
@@ -201,9 +177,10 @@ def BFSlikeSort(graph, n, reprezentacja):
     print (*sorted_nodes)
 
 def DFSlikeSort(graph, n, reprezentacja):
-    sorted_nodes = []
-    visited = [False] * n
+    sorted_nodes = [] # tworzymy tablicę wynikową
+    visited = [False] * n # tworzymy tablicę odwiedzonych wierzchołków
 
+    # dopóki nie przeszliśmy wszystkich wierzchołków losujemy nieodwiedzony i podajemy go do algorytmu
     while False in visited:
         while True:
             v = random.randint(0,n-1)
@@ -211,12 +188,13 @@ def DFSlikeSort(graph, n, reprezentacja):
                 DFSlikealg(graph, v, n, visited, sorted_nodes, reprezentacja)
                 break
           
-    return sorted_nodes[::-1]
+    print(*sorted_nodes[::-1])
  
 def DFSlikealg(graph, v, n, visited, sorted_nodes, reprezentacja):
-    visited[v] = True
+    visited[v] = True # odznaczamy wierzchołek jako odwiedzony
+
+    # zależnie od reprezentacji poszukujemy następników i dodajemy je do tablicy z następnikami 
     next = []
-    
     if reprezentacja == "adjList":
         next = graph[v]
     elif reprezentacja == "adjMatrix":
@@ -228,21 +206,31 @@ def DFSlikealg(graph, v, n, visited, sorted_nodes, reprezentacja):
             if el[0] == v:
                 next.append(el[1])
 
-    for neighbor in next:
-        if visited[neighbor] == False:
-            DFSlikealg(graph, neighbor, n, visited, sorted_nodes, reprezentacja)
+    # dla każdego nieodwiedzonego następnika wywołujemy algorytm
+    for j in next:
+        if visited[j] == False:
+            DFSlikealg(graph, j, n, visited, sorted_nodes, reprezentacja)
 
+    # po przejściu wszystkich następników danego wierzchołka dodajemy go jako posortowany
     sorted_nodes.append(v)
 
 x = 1
 while x:
-    print("Wybierz opcje")
-    print("1 - genetowanie grafu o n wierzchołkach")
-    print("2 - genetowanie grafu poprzed podanie wierszy macierzy sasiedztwa")
-    op = int(input())
+    while True:
+        print("Wybierz opcje")
+        print("1 - generowanie grafu o n wierzchołkach")
+        print("2 - generowanie grafu poprzed podanie wierszy macierzy sasiedztwa")
+        op = int(input())
+        if op in [1,2]:
+            break
 
-    print("Podaj n")
-    n = int(input())
+    while True:
+        print("Podaj n")
+        n = input()
+        if n.isnumeric():
+            n = int(n)
+            break
+
     edges = (n*(n-1))//4
     adjMatrix = []
 
@@ -252,8 +240,17 @@ while x:
 
     if op == 2:
         for i in range(n):
-            print("Podaj wiersz nr: {}".format(i))
-            adjMatrix.append([int(x) for x in input().split()])
+            flag = True
+            while flag:
+                tmp = []
+                print("Podaj wiersz nr: {}".format((i+1)))
+                inp = input().split()
+                for x in inp:
+                    if x in ['0','1']:
+                        tmp.append(int(x))
+                if len(inp) == len(tmp) and len(tmp) == n:
+                    break
+            adjMatrix.append(tmp)
 
 
 
@@ -277,6 +274,7 @@ while x:
 
     rand = random.randint(0,n-1)
 
+    print("BFS")
     BFS(adjList, rand, n, "adjList")
 
     BFS(adjMatrix, rand, n, "adjMatrix")
@@ -285,6 +283,7 @@ while x:
 
     print()
 
+    print("DFS")
     DFS(adjList, rand, n, "adjList")
 
     DFS(adjMatrix, rand, n, "adjMatrix")
@@ -293,18 +292,25 @@ while x:
 
     print()
 
+    print("BFSlikeSort")
     BFSlikeSort(adjList, n, "adjList")
 
     BFSlikeSort(adjMatrix, n, "adjMatrix")
 
     BFSlikeSort(edgeList, n, "edgeList")
 
+    print()
+
+    print("DFSlikeSort")
     DFSlikeSort(adjList, n, "adjList")
 
     DFSlikeSort(adjMatrix, n, "adjMatrix")
 
     DFSlikeSort(edgeList, n, "edgeList")
 
-    print("0 - jesli chcesz zakonczyc program")
-    print("1 - jesli chcesz wykonac go ponownie")
-    x = int(input())
+    while True:
+        print("0 - jesli chcesz zakonczyc program")
+        print("1 - jesli chcesz wykonac go ponownie")
+        x = int(input())
+        if x in [0,1]:
+            break
